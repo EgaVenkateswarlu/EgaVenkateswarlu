@@ -1,1 +1,123 @@
-print("Hello")
+import tkinter as tk
+from tkinter import *
+import random
+class Ludo_Game:
+    def __init__(self,root):
+        self.root=root
+        self.root.geometry("1550x780")
+
+        #Label Creating
+        title=Label(self.root,text="Ludo Game",font=("Times New Roman",40),bg="black",fg="white")
+        title.pack(fill=X)
+
+        #Creating Frame Bord
+        bordFrame=Frame(self.root,bg='blue')
+        bordFrame.place(x=10,y=75,width=840,height=705)
+
+        #Label inside the frame
+        lbl=Label(bordFrame,text='Board',font=('Times New Roman',25),bg='white',fg='blue')
+        lbl.pack(fill=X)
+
+        #Creating Frame
+        self.frame=Frame(bordFrame,bg="white")
+        self.frame.place(x=100,y=120,width=620,height=500)
+
+        #Buttons
+        self.RowsCols= tk.Canvas(self.frame, width=620, height=500, bg='white')
+        self.RowsCols.pack()
+
+        self.RowsCols.create_rectangle(3, 3, 615,495, outline='black', width=3)
+        for i in range(1, 6):
+            self.RowsCols.create_line(3, 3 + i * 100, 615, 3 + i * 100, fill='black')
+            self.RowsCols.create_line(3 + i * 100, 3, 3 + i * 100, 520, fill='black')
+
+        #Creating Dais Frame
+        DaisFrame=Frame(self.root,bg='silver')
+        DaisFrame.place(x=860,y=75,width=665,height=705)
+
+        #Inside DaisFrame creating display Frame
+        self.display_label = tk.Label(DaisFrame, font=('Helvetica', 100), width=6, height=2, relief='solid', bd=3)
+        self.display_label.place(x=100,y=120)
+
+        #Inside DaisFrame Buttons
+        self.UserBtn1=tk.Button(DaisFrame,text='Player-1', command=lambda: self.random_number(1), font=('Times New Roman',25,'bold'), bg='green', fg='white', relief='raised', width=7)
+        self.UserBtn1.place(x=180, y=540)
+
+        self.UserBtn2=tk.Button(DaisFrame,text='Player-2', command=lambda: self.random_number(2), font=('Times New Roman',25,'bold'), bg='green', fg='white', relief='raised', width=7)
+        self.UserBtn2.place(x=360, y=540)
+
+        # Initialize user positions
+        self.user_positions = {1: 0, 2: 0}
+
+        # Initialize user colors
+        self.user_colors = {1: 'red', 2: 'blue'}
+
+    # generating number
+    def random_number(self, user):
+        rndom_number = random.randint(1, 6)
+        self.display_label.config(text=str(rndom_number))
+        self.move_steps(user, rndom_number)
+        winner = self.check_winner()
+        if winner:
+            self.display_winner(winner)
+
+    # Move the steps on the canvas
+    def move_steps(self, user, steps):
+        # Clear previous drawings
+        self.RowsCols.delete(f'user_{user}')
+
+        # Define step size and block size
+        step_size = 0
+        block_size = 40  # Adjust this value if needed for better positioning
+
+        # Update user position
+        self.user_positions[user] += steps
+
+        # Limit user position to prevent moving beyond the last block
+        max_position = 30
+        self.user_positions[user] = min(self.user_positions[user], max_position)
+
+        # Calculate center of block for user's current position
+        x, y = self.calculate_block_center(self.user_positions[user])
+
+        # Draw player piece at the current position
+        self.RowsCols.create_oval(x - block_size // 2, y - block_size // 2, x + block_size // 2, y + block_size // 2, fill=self.user_colors[user], tags=f'user_{user}')
+
+        # Count starting point as step
+        if self.user_positions[user] == 1:
+            steps += 1
+
+        # Print step count
+        print(f"User {user} took {steps} steps")
+
+    # Calculate the center of the block for a given position
+    def calculate_block_center(self, position):
+        # Define step size and starting position
+        step_size = 100
+        start_x, start_y = 0, 0
+
+        # Calculate row and column for the given position
+        row = (position - 1) // 6
+        col = (position - 1) % 6
+
+        # Calculate center coordinates of the block
+        x = start_x + col * step_size + step_size // 2
+        y = start_y + row * step_size + step_size // 2
+
+        return x, y
+
+    def check_winner(self):
+        for user, position in self.user_positions.items():
+            if position == 30:
+                return user
+        return None
+
+    # Display the winner
+    def display_winner(self, winner):
+        winner_name = f"Player {winner}"
+        winner_label = tk.Label(self.root, text=f"{winner_name} is the winner!", font=("Times New Roman", 40), bg="gold", fg="white")
+        winner_label.pack(fill=tk.X, pady=100)
+
+root=Tk()
+obj=Ludo_Game(root)
+root.mainloop()
