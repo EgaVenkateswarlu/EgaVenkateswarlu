@@ -18,11 +18,11 @@ class Ludo_Game:
         lbl=Label(bordFrame,text='Board',font=('Times New Roman',25),bg='white',fg='blue')
         lbl.pack(fill=X)
 
-        #Creating Frame
+        #Creating BoardFrame
         self.frame=Frame(bordFrame,bg="white")
         self.frame.place(x=100,y=120,width=620,height=500)
 
-        #Buttons
+       
         self.RowsCols= tk.Canvas(self.frame, width=620, height=500, bg='white')
         self.RowsCols.pack()
 
